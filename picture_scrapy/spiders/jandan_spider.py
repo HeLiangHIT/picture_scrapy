@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import logging
 from picture_scrapy.items import ImageItem
 
 _next_xpath = '//a[@title="Older Comments"]/@href'
@@ -12,7 +11,7 @@ class JandanSpider(scrapy.Spider):
     start_urls = ['http://jandan.net/ooxx']
 
     def parse(self, response):
-        logging.info("begin to parser %s" % response.url)
+        self.logger.info("begin to parser %s" % response.url)
 
         # 查找下一页继续访问
         next_url = response.xpath(_next_xpath).extract_first()

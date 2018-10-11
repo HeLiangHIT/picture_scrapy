@@ -53,7 +53,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 ITEM_PIPELINES = {
-   'picture_scrapy.pipelines.RedisListPipeline': 500,
+   'picture_scrapy.pipelines.RedisSetPipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

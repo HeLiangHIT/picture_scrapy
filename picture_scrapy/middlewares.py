@@ -6,7 +6,6 @@
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-import logging
 
 
 from faker import Faker
@@ -22,25 +21,34 @@ from scrapy.http import HtmlResponse
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 class ChromeDownloaderMiddleware(object):
-    def __init__(self):
+    @classmethod
+    def from_crawler(cls, crawler):
+        s = cls()
+        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
+        return s
+
+    def spider_opened(self, spider):
         options = webdriver.ChromeOptions()
         # options.add_argument('--headless')  # 无界面
         self.driver = webdriver.Chrome(chrome_options=options)
-        self.driver.implicitly_wait(0.5) # 识别对象
-        self.driver.set_script_timeout(1) # 异步脚本的超时时间
-        self.driver.set_page_load_timeout(1.5) # 页面完全加载
-        
-    def __del__(self):
+        self.driver.implicitly_wait(1) # 识别对象
+        self.driver.set_script_timeout(2) # 异步脚本的超时时间
+        self.driver.set_page_load_timeout(5) # 页面完全加载
+        spider.logger.info('webdriver opened')
+
+    def spider_closed(self, spider, *args):
         self.driver.quit()
-        self.driver.close()
+        # self.driver.close()
+        spider.logger.info("chrome driver closed.")
 
     def process_request(self, request, spider):
         try:
             self.driver.get(request.url)
         except TimeoutException as e:
-            logging.warn("download %s timeout!" % request.url) # return page_source yet
+            spider.logger.warn("download %s timeout!" % request.url) # return page_source yet
         except Exception as e:
-            logging.error("download %s failed] %s" % (request.url, e))
+            spider.logger.error("download %s failed] %s" % (request.url, e))
             return HtmlResponse(url=request.url, request=request, encoding='utf-8', status=500)
 
         return HtmlResponse(url=request.url, body=self.driver.page_source,
