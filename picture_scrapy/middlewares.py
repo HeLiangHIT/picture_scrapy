@@ -35,7 +35,7 @@ class ChromeDownloaderMiddleware(object):
         self.driver = webdriver.Chrome(chrome_options=options)
         self.driver.implicitly_wait(1) # 识别对象
         self.driver.set_script_timeout(2) # 异步脚本的超时时间
-        self.driver.set_page_load_timeout(3) # 页面完全加载
+        self.driver.set_page_load_timeout(5) # 页面完全加载
         spider.logger.info('webdriver opened')
 
     def spider_closed(self, spider, *args):
@@ -47,18 +47,19 @@ class ChromeDownloaderMiddleware(object):
         try:
             self.driver.get(request.url)
         except TimeoutException as e:
-            spider.logger.warn("download %s timeout!" % request.url) # return page_source yet
+            spider.logger.warn("download %s timeout]%s" % (request.url, e)) # return page_source yet
             # self.driver.execute_script('window.stop()') # 停止加载内容
             # time.sleep(0.5)
         except Exception as e:
-            spider.logger.error("download %s failed] %s" % (request.url, e))
+            spider.logger.error("download %s failed]%s" % (request.url, e))
             # self.driver.execute_script('window.stop()') # 停止加载内容
             # time.sleep(0.5)
 
         try:
             return HtmlResponse(url=request.url, body=self.driver.page_source,
                                 request=request, encoding='utf-8', status=200) # 超时也可以尽量返回内容
-        except:
+        except Exception as e:
+            spider.logger.error("parse page_source of %s failed]%s" % (request.url, e))
             return HtmlResponse(url=request.url, request=request, status=408)
 
 
