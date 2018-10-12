@@ -55,7 +55,7 @@ class ChromeDownloaderMiddleware(object):
             return HtmlResponse(url=request.url, body=self.driver.page_source,
                                 request=request, encoding='utf-8', status=200) # 超时也可以尽量返回内容
         except:
-            return HtmlResponse(url=request.url, request=request, encoding='utf-8', status=408)
+            return HtmlResponse(url=request.url, request=request, status=408)
 
 
 class PictureScrapySpiderMiddleware(object):
