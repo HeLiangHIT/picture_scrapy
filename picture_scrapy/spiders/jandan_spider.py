@@ -24,5 +24,5 @@ class JandanSpider(scrapy.Spider):
             org_src = img.xpath("./@org_src").extract_first() # gif src
             src = img.xpath("./@src").extract_first()
             src_url = org_src if org_src is not None else src
-            yield ImageItem(url=src_url, name=src_url.split('/')[-1])
+            yield ImageItem(url=src_url, name=src_url.split('/')[-1], folder="jiandan")
 

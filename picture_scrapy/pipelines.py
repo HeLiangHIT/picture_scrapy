@@ -14,8 +14,9 @@ class RedisSetPipeline(object):
     
     def open_spider(self, spider):
         self.db = redis.StrictRedis(host=self.ip, port=self.port, password=None, decode_responses=True)
-        self.db.delete(self.key)
-        spider.logger.info("redis connected with key=%s." % self.key)
+        key = f'{self.key}:{spider.name}'
+        self.db.delete(key)
+        spider.logger.info("redis connected with key=%s." % key)
     
     def process_item(self, item, spider):
         key = f'{self.key}:{spider.name}'

@@ -6,12 +6,12 @@ NEWSPIDER_MODULE = 'picture_scrapy.spiders'
 LOG_LEVEL = 'INFO'
 
 # 避免 http status code is not handled or allowed
-# HTTPERROR_ALLOWED_CODES = [404, 408] # 405 - timeout
+HTTPERROR_ALLOWED_CODES = [404, 408] # 408 - timeout
 
 # https://doc.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry
-RETRY_ENABLED = True
+# RETRY_ENABLED = True
 RETRY_TIMES = 5
-RETRY_HTTP_CODES = [500, 502, 503, 504, 408] # default
+# RETRY_HTTP_CODES = [500, 502, 503, 504, 408] # default
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36"

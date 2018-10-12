@@ -10,5 +10,6 @@ import scrapy
 class ImageItem(scrapy.Item):
     name = scrapy.Field()
     url = scrapy.Field()
+    folder = scrapy.Field()
 
 
