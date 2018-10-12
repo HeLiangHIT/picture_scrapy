@@ -3,7 +3,7 @@ import scrapy
 from picture_scrapy.items import ImageItem
 
 _next_xpath = '//a[@title="Older Comments"]/@href'
-_img_xpath = '//*[contains(@id,"comment")]/div/div/div[2]/p/img/@src'
+_img_xpath = '//*[contains(@id,"comment")]/div/div/div[2]/p/img' # @src or @org_src
 
 
 class JandanSpider(scrapy.Spider):
@@ -19,8 +19,10 @@ class JandanSpider(scrapy.Spider):
             yield response.follow("http:" + next_url, self.parse)
 
         # 返回图片地址
-        img_list = response.xpath(_img_xpath).extract()
-        for src_url in img_list:
+        img_list = response.xpath(_img_xpath)
+        for img in img_list:
+            org_src = img.xpath("./@org_src").extract_first() # gif src
+            src = img.xpath("./@src").extract_first()
+            src_url = org_src if org_src is not None else src
             yield ImageItem(url=src_url, name=src_url.split('/')[-1])
-
 

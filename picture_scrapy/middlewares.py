@@ -31,6 +31,7 @@ class ChromeDownloaderMiddleware(object):
     def spider_opened(self, spider):
         options = webdriver.ChromeOptions()
         # options.add_argument('--headless')  # 无界面
+        # options.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2}) # 不加载图片-会获取不到图片地址
         self.driver = webdriver.Chrome(chrome_options=options)
         self.driver.implicitly_wait(1) # 识别对象
         self.driver.set_script_timeout(2) # 异步脚本的超时时间
@@ -49,10 +50,14 @@ class ChromeDownloaderMiddleware(object):
             spider.logger.warn("download %s timeout!" % request.url) # return page_source yet
         except Exception as e:
             spider.logger.error("download %s failed] %s" % (request.url, e))
+        
+        try:
+            return HtmlResponse(url=request.url, body=self.driver.page_source,
+                                request=request, encoding='utf-8', status=200) # 超时也可以尽量返回内容
+        except:
             return HtmlResponse(url=request.url, request=request, encoding='utf-8', status=500)
 
-        return HtmlResponse(url=request.url, body=self.driver.page_source,
-                            request=request, encoding='utf-8', status=200) # 超时也可以尽量返回内容
+
 
 
 class PictureScrapySpiderMiddleware(object):

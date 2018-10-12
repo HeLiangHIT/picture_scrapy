@@ -3,7 +3,7 @@
 import redis, json
 
 class RedisSetPipeline(object):
-    def __init__(self, ip='127.0.0.1', port=6379, key="picture:mm"):
+    def __init__(self, ip='127.0.0.1', port=6379, key="picture"):
         self.ip = ip
         self.port = port
         self.key = key
@@ -15,12 +15,13 @@ class RedisSetPipeline(object):
     def open_spider(self, spider):
         self.db = redis.StrictRedis(host=self.ip, port=self.port, password=None, decode_responses=True)
         self.db.delete(self.key)
-        spider.logger.info("redis connected with key=%s" % self.key)
+        spider.logger.info("redis connected with key=%s." % self.key)
     
     def process_item(self, item, spider):
-        spider.logger.info("item %s saved." % item['url'])
+        key = f'{self.key}:{spider.name}'
         val = json.dumps(dict(item))
-        self.db.sadd(self.key, val) # use spop(self.key), scard(self.key), del(self.key)
+        self.db.sadd(key, val) # use spop(key), scard(key), del(key)
+        spider.logger.info("item %s saved in set, key=%s." % (item['url'], key))
     
     def close_spider(self, spider):
         pass
