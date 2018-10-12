@@ -28,26 +28,32 @@ class ChromeDownloaderMiddleware(object):
         crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
         return s
 
-    def spider_opened(self, spider):
-        options = webdriver.ChromeOptions()
-        # options.add_argument('--headless')  # 无界面
-        # options.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2}) # 不加载图片-会获取不到图片地址
-        self.driver = webdriver.Chrome(chrome_options=options)
+    def open_driver(self, spider):
+        self.options = webdriver.ChromeOptions()
+        # self.options.add_argument('--headless')  # 无界面
+        # self.options.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2}) # 不加载图片-会获取不到图片地址
+        self.driver = webdriver.Chrome(chrome_options=self.options)
         self.driver.implicitly_wait(1) # 识别对象
         self.driver.set_script_timeout(2) # 异步脚本的超时时间
         self.driver.set_page_load_timeout(5) # 页面完全加载
         spider.logger.info('webdriver opened')
 
-    def spider_closed(self, spider, *args):
+    def close_driver(self, spider):
         self.driver.quit()
         # self.driver.close()
         spider.logger.info("chrome driver closed.")
+
+    def spider_opened(self, spider):
+        self.open_driver(spider)
+        
+    def spider_closed(self, spider):
+        self.close_driver(spider)
 
     def process_request(self, request, spider):
         try:
             self.driver.get(request.url)
         except TimeoutException as e:
-            spider.logger.warn("download %s timeout]%s" % (request.url, e)) # return page_source yet
+            spider.logger.warn("download %s timeout]" % (request.url)) # return page_source yet
             # self.driver.execute_script('window.stop()') # 停止加载内容
             # time.sleep(0.5)
         except Exception as e:
@@ -59,7 +65,10 @@ class ChromeDownloaderMiddleware(object):
             return HtmlResponse(url=request.url, body=self.driver.page_source,
                                 request=request, encoding='utf-8', status=200) # 超时也可以尽量返回内容
         except Exception as e:
-            spider.logger.error("parse page_source of %s failed]%s" % (request.url, e))
+            # 等待重启后重新访问页面
+            self.close_driver(spider)
+            self.open_driver(spider)
+            # spider.logger.error("parse page_source of %s failed]%s" % (request.url, e))
             return HtmlResponse(url=request.url, request=request, status=408)
 
 

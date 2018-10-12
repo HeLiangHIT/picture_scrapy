@@ -10,7 +10,7 @@ HTTPERROR_ALLOWED_CODES = [404, 408] # 408 - timeout
 
 # https://doc.scrapy.org/en/latest/topics/downloader-middleware.html#module-scrapy.downloadermiddlewares.retry
 # RETRY_ENABLED = True
-RETRY_TIMES = 5
+RETRY_TIMES = 100
 # RETRY_HTTP_CODES = [500, 502, 503, 504, 408] # default
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
