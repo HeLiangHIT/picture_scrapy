@@ -5,6 +5,10 @@ SPIDER_MODULES = ['picture_scrapy.spiders']
 NEWSPIDER_MODULE = 'picture_scrapy.spiders'
 LOG_LEVEL = 'INFO'
 
+# 中间件参数
+SELENIUM_URL_RE = ['jandan.net/ooxx', ]
+SELENIUM_SPIDERS = ['jiandan', ]
+
 # 避免 http status code is not handled or allowed
 HTTPERROR_ALLOWED_CODES = [404, 408] # 408 - timeout
 

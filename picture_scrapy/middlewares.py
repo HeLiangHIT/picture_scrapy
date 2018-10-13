@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
-# Define here the models for your spider middleware
-#
-# See documentation in:
-# https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-import time
+import time, random
+from .util import *
+
 
 from faker import Faker
-import random
 class UserAgentMiddleware():
     # add random user agent
     def process_request(self, request, spider):
@@ -21,45 +18,61 @@ from scrapy.http import HtmlResponse
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 class ChromeDownloaderMiddleware(object):
+    def __init__(self, crawler, *args, **kargs):
+        super(ChromeDownloaderMiddleware, self).__init__(*args, **kargs)
+        self.crawler = crawler
+        self.patterns = crawler.settings.get('SELENIUM_URL_RE')
+        self.spiders = crawler.settings.get('SELENIUM_SPIDERS')
+
     @classmethod
     def from_crawler(cls, crawler):
-        s = cls()
+        s = cls(crawler)
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
         return s
 
     def open_driver(self, spider):
+        if spider.name not in self.spiders:
+            spider.logger.info("chrome don't opened since %s is not in SELENIUM_SPIDERS." %(spider.name))
+            return None # for next downloader to get it
+
         self.options = webdriver.ChromeOptions()
         # self.options.add_argument('--headless')  # 无界面
         # self.options.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2}) # 不加载图片-会获取不到图片地址
         self.driver = webdriver.Chrome(chrome_options=self.options)
         self.driver.implicitly_wait(1) # 识别对象
         self.driver.set_script_timeout(2) # 异步脚本的超时时间
-        self.driver.set_page_load_timeout(5) # 页面完全加载
+        self.driver.set_page_load_timeout(8) # 页面完全加载
         spider.logger.info('webdriver opened')
 
     def close_driver(self, spider):
-        self.driver.quit()
-        # self.driver.close()
+        if spider.name not in self.spiders:
+            spider.logger.info("chrome don't closed since %s is not in SELENIUM_SPIDERS." %(spider.name))
+            return None # for next downloader to get it
+        self.driver.quit() # self.driver.close()
         spider.logger.info("chrome driver closed.")
 
     def spider_opened(self, spider):
         self.open_driver(spider)
         
-    def spider_closed(self, spider):
+    def spider_closed(self, spider, reason):
         self.close_driver(spider)
 
     def process_request(self, request, spider):
+        if not filter_url_by_patterns(request.url, self.patterns):
+            spider.logger.debug("chrome ignore %s since not in SELENIUM_URL_RE." %(request.url))
+            return None # for next downloader to get it
+        
         try:
             self.driver.get(request.url)
         except TimeoutException as e:
             spider.logger.warn("download %s timeout]" % (request.url)) # return page_source yet
             # self.driver.execute_script('window.stop()') # 停止加载内容
-            # time.sleep(0.5)
+            time.sleep(0.5)
         except Exception as e:
             spider.logger.error("download %s failed]%s" % (request.url, e))
-            # self.driver.execute_script('window.stop()') # 停止加载内容
-            # time.sleep(0.5)
+            self.crawler.engine.close_spider(spider, "download %s failed]%s" % (request.url, e))
+            return None # do not continue parser
 
         try:
             return HtmlResponse(url=request.url, body=self.driver.page_source,
@@ -68,7 +81,6 @@ class ChromeDownloaderMiddleware(object):
             # 等待重启后重新访问页面
             self.close_driver(spider)
             self.open_driver(spider)
-            # spider.logger.error("parse page_source of %s failed]%s" % (request.url, e))
             return HtmlResponse(url=request.url, request=request, status=408)
 
 
