@@ -2,8 +2,8 @@
 import scrapy
 from picture_scrapy.items import ImageItem
 
-_title_xpath = '//ul[@class="archives"]/li/p/a'
-_next_xpath = '//div[@class="pagenavi"]/a[last()]'
+_title_xpath = '//ul[@class="archives"]/li/p/a/@href'
+_next_xpath = '//div[@class="pagenavi"]/a[last()]/@href'
 _img_xpath = '//div[@class="main-image"]/p/a/img'
 
 class MzituSpider(scrapy.Spider):
@@ -12,23 +12,24 @@ class MzituSpider(scrapy.Spider):
 
     def parse(self, response):
         self.logger.info("begin to parser %s" % response.url)
-        page_list = response.xpath(_next_xpath).extract()
+        page_list = response.xpath(_title_xpath).extract()
         for url in page_list:
             yield response.follow(url, self.parser_pages)
 
     def parser_pages(self, response):
-        self.logger.debug("begin to parser %s" % response.url)
+        self.logger.info("begin to parser %s" % response.url)
         # 查找下一页继续访问
         next_url = response.xpath(_next_xpath).extract_first()
-        if response.url.startswith(next_url):
+        if len(next_url.split('/')) == 5: 
+            # the len of first page is 4, while others 5
             yield response.follow(next_url, self.parser_pages)
         else:
-            self.logger.info("ignore next url=%s since it isn't for this pages.")
+            self.logger.info("ignore next url=%s whose length do not enough." % (next_url))
 
         # 返回图片地址
         img_list = response.xpath(_img_xpath)
         for img in img_list:
             src_url = img.xpath("./@src").extract_first()
-            folder = img.xpath("./@alt")
+            folder = img.xpath("./@alt").extract_first()
             yield ImageItem(url=src_url, name=src_url.split('/')[-1], folder=folder)
 
