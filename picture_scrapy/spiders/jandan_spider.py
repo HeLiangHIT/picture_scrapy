@@ -2,8 +2,8 @@
 import scrapy
 from picture_scrapy.items import ImageItem
 
-_next_xpath = '//a[@title="Older Comments"]/@href'
-_img_xpath = '//*[contains(@id,"comment")]/div/div/div[2]/p/img' # @src or @org_src
+_next_xpath = '//a[@title="Older Comments"]/@href' # 下一页
+_img_xpath = '//*[contains(@id,"comment")]/div/div/div[2]/p/img' # 图片包括动图 @src or @org_src
 
 
 class JandanSpider(scrapy.Spider):

@@ -2,9 +2,9 @@
 import scrapy
 from picture_scrapy.items import ImageItem
 
-_title_xpath = '//ul[@class="archives"]/li/p/a/@href'
-_next_xpath = '//div[@class="pagenavi"]/a[last()]/@href'
-_img_xpath = '//div[@class="main-image"]/p/a/img'
+_title_xpath = '//ul[@class="archives"]/li/p/a/@href' # 标题
+_next_xpath = '//div[@class="pagenavi"]/a[last()]/@href' # 下一页
+_img_xpath = '//div[@class="main-image"]/p/a/img' # 图片
 
 class MzituSpider(scrapy.Spider):
     name = 'mzitu'

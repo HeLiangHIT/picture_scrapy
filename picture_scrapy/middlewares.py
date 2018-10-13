@@ -33,7 +33,7 @@ class ChromeDownloaderMiddleware(object):
 
     def open_driver(self, spider):
         if spider.name not in self.spiders:
-            spider.logger.info("chrome don't opened since %s is not in SELENIUM_SPIDERS." %(spider.name))
+            spider.logger.info("chrome is not opened since %s is not in SELENIUM_SPIDERS." %(spider.name))
             return None # for next downloader to get it
 
         self.options = webdriver.ChromeOptions()
