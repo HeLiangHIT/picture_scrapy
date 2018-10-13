@@ -15,9 +15,9 @@ class MmjpgSpider(scrapy.Spider):
         self.logger.info("begin to parser %s" % response.url)
 
         # 生成所有页面
-        # last_page = response.xpath(_last_xpath).extract_first()
-        # for x in range(2, int(last_page.split('/')[-1])):
-        #     yield response.follow('http://www.mmjpg.com/home/%d' % x, self.parse)
+        last_page = response.xpath(_last_xpath).extract_first()
+        for x in range(2, int(last_page.split('/')[-1])):
+            yield response.follow('http://www.mmjpg.com/home/%d' % x, self.parse)
 
         # 查找本页的主题深入访问
         title_urls = response.xpath(_title_xpath).extract()

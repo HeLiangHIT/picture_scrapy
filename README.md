@@ -1,23 +1,35 @@
 # picture_scrapy
 
 #### 项目介绍
-爬图专用爬虫
+使用 scrapy 实现的图片爬取框架，融合了 UserAgentMiddleware/ChromeDownloaderMiddleware 中间件，RedisSetPipeline 管道用于将爬取到的图片保存到redis的set类型中，另外提供一个多线程异步下载器从redis中依次取出图片地址进行批量下载并保存。
 
 #### 软件架构
-软件架构说明
+
+实现了四个美女图片的爬虫：
++ http://jandan.net/ooxx ： [./picture_scrapy/spiders/jandan_spider.py](./picture_scrapy/spiders/jandan_spider.py)  `scrapy crawl jiandan`
++ http://www.mzitu.com/all/： [./picture_scrapy/spiders/mzitu_spider.py](./picture_scrapy/spiders/mzitu_spider.py)  `scrapy crawl mzitu`
++ http://www.meizitu.com/： [./picture_scrapy/spiders/meizitu_spider.py](./picture_scrapy/spiders/meizitu_spider.py)  `scrapy crawl meizitu`
++ http://www.mmjpg.com/： [./picture_scrapy/spiders/mmjpg_spider.py](./picture_scrapy/spiders/mmjpg_spider.py) `scrapy crawl mmjpg`
+
+这样做的优势是"支持分布式爬取 + 分布式下载"，比如我就使用 mac 爬取图片地址，然后用 windows 连上移动硬盘下载图片， win/mac 搭配，干活不累。如果有更多电脑的话可以更好的配合。
 
 
-#### 安装教程
 
-1. xxxx
-2. xxxx
-3. xxxx
+#### 安装教程 && 使用说明
 
-#### 使用说明
+1. 在某台机器上启动 `redis-server path/to/redis.conf` 注意配置中注释掉 `bind 127.0.0.1 ::1`
+2. 在多个电脑上分别 `git clone 本项目地址`， 然后到工厂目录下使用 `pip install -r requirement.tx` 或者使用 pipenv
+3. 在 settings.py 中设置正确的 `REDIS_IP` 和 `REDIS_PORT` 参数。
+4. 分别使用 `scrapy crawl xxx` 爬取指定的网站
+5. 分别使用 `python picture_download.py xxx` 下载指定网站的图片
 
-1. xxxx
-2. xxxx
-3. xxxx
+
+#### todo
+
+1. 由于当前使用 scrapy 爬取较慢（相比自己编写的异步爬虫而言却是慢了挺多），而且爬取的几个网站都没有遇到封锁ip的现象，所以未实现ip池中间件，如果后期有需要可以增加。
+2. 多线程异步下载器下载时由于速度太快很可能被封ip，所以代理ip池还是有必要增加的。
+3. 依赖库文件的生成。
+
 
 #### 参与贡献
 
@@ -25,13 +37,3 @@
 2. 新建 Feat_xxx 分支
 3. 提交代码
 4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
