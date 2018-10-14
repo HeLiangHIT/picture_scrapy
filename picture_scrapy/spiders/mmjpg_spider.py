@@ -10,6 +10,9 @@ _last_xpath = '//div[@class="page"]//a[@class="last"]/@href' # 最后一页列�
 class MmjpgSpider(scrapy.Spider):
     name = 'mmjpg'
     start_urls = ['http://www.mmjpg.com/']
+    custom_settings = { # 和 settings.py 中不一样的配置
+        'LOG_FILE':'log/mmjpg.log'
+    }
 
     def parse(self, response):
         self.logger.info("begin to parser %s" % response.url)

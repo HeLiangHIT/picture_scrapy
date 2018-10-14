@@ -9,6 +9,12 @@ _img_xpath = '//*[contains(@id,"comment")]/div/div/div[2]/p/img' # 图片包括�
 class JandanSpider(scrapy.Spider):
     name = 'jiandan'
     start_urls = ['http://jandan.net/ooxx']
+    custom_settings = { # 和 settings.py 中不一样的配置
+        'DOWNLOADER_MIDDLEWARES' : {
+            'picture_scrapy.middlewares.ChromeDownloaderMiddleware': 501,
+        },
+        'LOG_FILE':'log/jiandan.log'
+    }
 
     def parse(self, response):
         self.logger.info("begin to parser %s" % response.url)

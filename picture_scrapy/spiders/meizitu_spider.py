@@ -10,7 +10,10 @@ _next_xpath = '//div[@id="wp_page_numbers"]/ul/li[last()-1]/a/@href' # 下一页
 class MeizituSpider(scrapy.Spider):
     name = 'meizitu'
     start_urls = ['http://www.meizitu.com/a/more_1.html']
-
+    custom_settings = { # 和 settings.py 中不一样的配置
+        'LOG_FILE':'log/meizitu.log'
+    }
+    
     def parse(self, response):
         self.logger.info("begin to parser %s" % response.url)
 

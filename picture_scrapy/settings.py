@@ -4,6 +4,7 @@ BOT_NAME = 'picture_scrapy'
 SPIDER_MODULES = ['picture_scrapy.spiders']
 NEWSPIDER_MODULE = 'picture_scrapy.spiders'
 LOG_LEVEL = 'INFO'
+'LOG_FILE':'log/picture_scrapy.log'
 
 # 中间件参数
 SELENIUM_URL_RE = ['jandan.net/ooxx', ]
@@ -24,7 +25,7 @@ RETRY_TIMES = 100
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 DOWNLOAD_DELAY = 2
@@ -53,8 +54,8 @@ COOKIES_ENABLED = True
 # Enable or disable downloader middlewares
 DOWNLOADER_MIDDLEWARES = {
     'picture_scrapy.middlewares.UserAgentMiddleware': 500,
-    'picture_scrapy.middlewares.ChromeDownloaderMiddleware': 501,
-   # 'picture_scrapy.middlewares.PictureScrapyDownloaderMiddleware': 502,
+    # 'picture_scrapy.middlewares.ChromeDownloaderMiddleware': 501,
+    # 'picture_scrapy.middlewares.PictureScrapyDownloaderMiddleware': 502,
 }
 
 # Enable or disable extensions

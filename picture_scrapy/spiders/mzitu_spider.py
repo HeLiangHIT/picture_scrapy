@@ -9,6 +9,9 @@ _img_xpath = '//div[@class="main-image"]/p/a/img' # 图片
 class MzituSpider(scrapy.Spider):
     name = 'mzitu'
     start_urls = ['http://www.mzitu.com/all/']
+    custom_settings = { # 和 settings.py 中不一样的配置
+        'LOG_FILE':'log/mzitu.log'
+    }
 
     def parse(self, response):
         self.logger.info("begin to parser %s" % response.url)

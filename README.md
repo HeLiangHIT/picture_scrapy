@@ -15,6 +15,7 @@
 
 
 
+
 #### 安装教程 && 使用说明
 
 1. 在某台机器上启动 `redis-server path/to/redis.conf` 注意配置中注释掉 `bind 127.0.0.1 ::1`
@@ -37,7 +38,22 @@ Options:
   --empty_exit=empty_exit      select if exit when redis set empty. [default: true]
   --concurrency=concurrency    select the concurrency number of downloader. [default: 20]
 ```
-example: `python picture_downloader.py --key='picture:mmjpg' --dir='/Users/heliang/Pictures/scrapy/' --empty_exit=1 --concurrency=20`
+example of mine: 
+```
+scrapy crawl jiandan &
+python picture_downloader.py --key='picture:jiandan' --dir='/Users/heliang/Pictures/scrapy' --empty_exit=0 --concurrency=20
+
+scrapy crawl meizitu &
+python picture_downloader.py --key='picture:meizitu' --dir='/Users/heliang/Pictures/scrapy/meizitu' --empty_exit=0 --concurrency=20
+
+scrapy crawl mzitu &
+python picture_downloader.py --key='picture:mzitu' --dir='/Users/heliang/Pictures/scrapy/mzitu' --empty_exit=0 --concurrency=20
+
+scrapy crawl mmjpg &
+python picture_downloader.py --key='picture:mmjpg' --dir='/Users/heliang/Pictures/scrapy/mmjpg' --empty_exit=0 --concurrency=20
+```
+
+
 
 #### todo
 
