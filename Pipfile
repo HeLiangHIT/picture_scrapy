@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+scrapy = "*"
+redis = "*"
+trio = "*"
+asks = "*"
+faker = "*"
+docopt = "*"
+selenium = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
