@@ -19,7 +19,7 @@
 #### 安装教程 && 使用说明
 
 1. 在某台机器上启动 `redis-server path/to/redis.conf` 注意配置中注释掉 `bind 127.0.0.1 ::1`
-2. 在多个电脑上分别 `git clone 本项目地址`， 然后到工厂目录下使用 `pip install -r requirement.tx` 或者使用 pipenv
+2. 在多个电脑上分别 `git clone 本项目地址`， 然后到工厂目录下使用 `pip install -r requirement.txt` 或者使用 `pipenv shell`
 3. 在 settings.py 中设置正确的 `REDIS_IP` 和 `REDIS_PORT` 参数。
 4. 分别使用 `scrapy crawl xxx` 爬取指定的网站
 5. 分别使用 `python picture_downloader.py --key='xxx' --dir='xxx'` 下载指定网站的图片，更多参数`python picture_downloader.py --help`：
