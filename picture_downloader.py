@@ -5,9 +5,8 @@
 # @Link    : https://github.com/HeLiangHIT
 
 '''
-异步协程下载器： 从redis里面读取类似
-`{"url": "http://www.aaa.com/a/a.jpg", "name": "a.jpg", "folder": "a", "page":"www.xxx.com"}`
-的图片信息协程下载。
+异步协程下载器：从 redis 里面连续读取图片json信息，然后使用协程下载保存到指定文件夹中。有效的json举例如下：
+`{"url": "http://www.a.com/a/a.jpg", "name": "a.jpg", "folder": "a", "page":"www.a.com"}`
 
 Usage:
   picture_download.py [--dir=dir] [--ip=ip] [--port=port] [--key=key]
@@ -21,13 +20,13 @@ Options:
 
 
 import redis, json, os, logging, trio, asks, random
-from faker import Faker
+from faker import Faker # https://faker.readthedocs.io/en/master/index.html
 from docopt import docopt
 
 
 # 基本配置和默认参数
 asks.init('trio')
-logging.basicConfig(level=logging.INFO, 
+logging.basicConfig(level=logging.DEBUG, 
                 format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 _SAVE_DIR = "%s/Pictures/scrapy/" % os.path.expanduser('~') # os.environ['HOME']
 _KEY = 'picture:jiandan'
@@ -56,7 +55,7 @@ async def download_picture(url, referer, res_time=10):
     if res_time <= 0: # 重试超过了次数
         return None
     header = {"Referer": referer, 
-              "User-Agent":Faker(locale='zh').chrome()}
+              "User-Agent":Faker(locale='zh-CN').chrome()}
     res = await asks.get(url, headers=header)
     if res.status_code not in [200, 202]:
         logging.warn(f"download from {url} fail]response={res}")
@@ -116,8 +115,8 @@ async def main():
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version="picture_downloader 0.0.1")
-    _SAVE_DIR = arguments["--dir"] if arguments["--dir"] else _SAVE_DIR
-    _IP = arguments["--ip"] if arguments["--ip"] else _IP
+    _SAVE_DIR = arguments["--dir"] if arguments["--dir"] else _SAVE_DIR # 不会取doc里`*default`的值
+    _IP = arguments["--ip"] if arguments["--ip"] else _IP # 默认取doc里`[default:val]`的值
     _PORT = arguments["--port"] if arguments["--port"] else _PORT
     _KEY = arguments["--key"] if arguments["--key"] else _KEY
     logging.info(f"start download from redis://{_IP}:{_PORT}/{_KEY} to {_SAVE_DIR} ...")
