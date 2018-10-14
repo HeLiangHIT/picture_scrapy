@@ -32,5 +32,5 @@ class MeizituSpider(scrapy.Spider):
         img_list = response.xpath(_img_xpath)
         for img in img_list:
             src_url = img.xpath("./@src").extract_first()
-            yield ImageItem(url=src_url, name=src_url.split('/')[-1], folder=folder)
+            yield ImageItem(url=src_url, name=src_url.split('/')[-1], folder=folder, page=response.url)
 

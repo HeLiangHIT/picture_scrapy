@@ -32,7 +32,7 @@ class MmjpgSpider(scrapy.Spider):
         for img in img_list:
             src_url = img.xpath("./@src").extract_first()
             folder = re.sub(' 第\d+张', '', img.xpath("./@alt").extract_first()) # replace 正则
-            yield ImageItem(url=src_url, name=src_url.split('/')[-1], folder=folder)
+            yield ImageItem(url=src_url, name=src_url.split('/')[-1], folder=folder, page=response.url)
         # 返回爬取下一页
         next_page = response.xpath(_next_xpath).extract_first()
         if len(next_page.split('/')) == 4:

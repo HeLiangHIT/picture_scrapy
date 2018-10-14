@@ -11,5 +11,6 @@ class ImageItem(scrapy.Item):
     name = scrapy.Field()
     url = scrapy.Field()
     folder = scrapy.Field()
+    page = scrapy.Field()
 
 
