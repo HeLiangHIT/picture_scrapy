@@ -41,16 +41,16 @@ Options:
 example of mine: 
 ```
 scrapy crawl jiandan &
-python picture_downloader.py --key='picture:jiandan' --dir='/Users/heliang/Pictures/scrapy' --empty_exit=0 --concurrency=20
+sleep 2 && python picture_downloader.py --key='picture:jiandan' --dir='/Users/heliang/Pictures/scrapy' --empty_exit=0 --concurrency=20
 
 scrapy crawl meizitu &
-python picture_downloader.py --key='picture:meizitu' --dir='/Users/heliang/Pictures/scrapy/meizitu' --empty_exit=0 --concurrency=20
+sleep 2 && python picture_downloader.py --key='picture:meizitu' --dir='/Users/heliang/Pictures/scrapy/meizitu' --empty_exit=0 --concurrency=20
 
 scrapy crawl mzitu &
-python picture_downloader.py --key='picture:mzitu' --dir='/Users/heliang/Pictures/scrapy/mzitu' --empty_exit=0 --concurrency=20
+sleep 2 && python picture_downloader.py --key='picture:mzitu' --dir='/Users/heliang/Pictures/scrapy/mzitu' --empty_exit=0 --concurrency=20
 
 scrapy crawl mmjpg &
-python picture_downloader.py --key='picture:mmjpg' --dir='/Users/heliang/Pictures/scrapy/mmjpg' --empty_exit=0 --concurrency=20
+sleep 2 && python picture_downloader.py --key='picture:mmjpg' --dir='/Users/heliang/Pictures/scrapy/mmjpg' --empty_exit=0 --concurrency=20
 
 ps -ef | grep 'scrapy crawl' | awk '{print $2}' | xargs kill # 停止所有爬虫
 ps -ef | grep chromedriver | awk '{print $2}' | xargs kill -9 # 清理后台可能残留的 chromedriver 进程
