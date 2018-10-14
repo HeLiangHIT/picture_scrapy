@@ -42,7 +42,7 @@ example of mine:
 ```sh
 function start_crawl(){
     name=$1
-    rm -f rm log/name.log
+    rm -f log/name.log
     scrapy crawl ${name} &
     sleep 2 && python picture_downloader.py --key=picture:${name} --dir=/Users/heliang/Pictures/scrapy/${name} --empty_exit=0 --concurrency=20
 }
@@ -53,10 +53,17 @@ function stop_crawl(){
         sleep 1
     done
 }
+function clear_all(){
+    while [ $(ps -ef | grep "scrapy crawl" | grep -v grep | wc -l) -ge 1 ]; do
+        ps -ef | grep 'scrapy crawl' | awk '{print $2}' | xargs kill # 停止所有爬虫
+    done
+    while [ $(ps -ef | grep "chromedriver" | grep -v grep | wc -l) -ge 1 ]; do
+        ps -ef | grep chromedriver | awk '{print $2}' | xargs kill -9 # 清理后台可能残留的 chromedriver 进程
+    done
+    rm -f log/*.log
+}
 
 start_crawl jiandan # meizitu mzitu mmjpg
-# ps -ef | grep 'scrapy crawl' | awk '{print $2}' | xargs kill # 停止所有爬虫
-# ps -ef | grep chromedriver | awk '{print $2}' | xargs kill -9 # 清理后台可能残留的 chromedriver 进程
 ```
 
 
@@ -64,8 +71,8 @@ start_crawl jiandan # meizitu mzitu mmjpg
 #### todo
 
 1. 代理ip： 当前没有遇到封锁ip的现象，所以未实现ip池，如果后期有需要可以增加。
-2. 下载文件去重复功能，发现本地已经存在的文件就不再下载了。
-3. 爬取网页去重复功能，爬取过的网页就不再爬了（某些主页列表例外）-即使重启机器/爬虫，如何实现？
+2. 下载文件去重复功能，发现本地已经存在的文件就不再下载了。 -- done
+3. 爬取网页去重复功能，爬取过的网页就不再爬了（某些主页列表例外） - 即使重启机器/爬虫，如何实现？ -- 使用`RedisCrawlSpider`？
 
 
 #### 参与贡献
