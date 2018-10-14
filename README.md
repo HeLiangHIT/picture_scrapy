@@ -39,33 +39,33 @@ Options:
   --concurrency=concurrency    select the concurrency number of downloader. [default: 20]
 ```
 example of mine: 
-```
-rm log/*.log
+```sh
+function start_crawl(){
+    name=$1
+    rm -f rm log/name.log
+    scrapy crawl ${name} &
+    sleep 2 && python picture_downloader.py --key=picture:${name} --dir=/Users/heliang/Pictures/scrapy/${name} --empty_exit=0 --concurrency=20
+}
+function stop_crawl(){
+    name=$1
+    while [ $(ps -ef | grep "scrapy crawl ${name}" | grep -v grep | wc -l) -ge 1 ]; do
+        ps -ef | grep "scrapy crawl ${name}" | awk '{print $2}' | xargs kill # 停止爬虫
+        sleep 1
+    done
+}
 
-scrapy crawl jiandan &
-sleep 2 && python picture_downloader.py --key='picture:jiandan' --dir='/Users/heliang/Pictures/scrapy' --empty_exit=0 --concurrency=20
-
-scrapy crawl meizitu &
-sleep 2 && python picture_downloader.py --key='picture:meizitu' --dir='/Users/heliang/Pictures/scrapy/meizitu' --empty_exit=0 --concurrency=20
-
-scrapy crawl mzitu &
-sleep 2 && python picture_downloader.py --key='picture:mzitu' --dir='/Users/heliang/Pictures/scrapy/mzitu' --empty_exit=0 --concurrency=20
-
-scrapy crawl mmjpg &
-sleep 2 && python picture_downloader.py --key='picture:mmjpg' --dir='/Users/heliang/Pictures/scrapy/mmjpg' --empty_exit=0 --concurrency=20
-
-ps -ef | grep 'scrapy crawl' | awk '{print $2}' | xargs kill
-ps -ef | grep 'scrapy crawl' | awk '{print $2}' | xargs kill # 停止所有爬虫
-ps -ef | grep chromedriver | awk '{print $2}' | xargs kill -9 # 清理后台可能残留的 chromedriver 进程
+start_crawl jiandan # meizitu mzitu mmjpg
+# ps -ef | grep 'scrapy crawl' | awk '{print $2}' | xargs kill # 停止所有爬虫
+# ps -ef | grep chromedriver | awk '{print $2}' | xargs kill -9 # 清理后台可能残留的 chromedriver 进程
 ```
 
 
 
 #### todo
 
-1. 由于当前使用 scrapy 爬取较慢（相比自己编写的异步爬虫而言却是慢了挺多），而且爬取的几个网站都没有遇到封锁ip的现象，所以未实现ip池中间件，如果后期有需要可以增加。
-2. 多线程异步下载器下载时由于速度太快很可能被封ip，所以代理ip池还是有必要增加的。偶尔会下载不全，为啥？
-3. 依赖库文件的生成。
+1. 代理ip： 当前没有遇到封锁ip的现象，所以未实现ip池，如果后期有需要可以增加。
+2. 下载文件去重复功能，发现本地已经存在的文件就不再下载了。
+3. 爬取网页去重复功能，爬取过的网页就不再爬了（某些主页列表例外）-即使重启机器/爬虫，如何实现？
 
 
 #### 参与贡献

@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.INFO,
                 format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 _SAVE_DIR = "%s/Pictures/scrapy/" % os.path.expanduser('~') # os.environ['HOME']
 _DOWNLOAD_TIMEOUT = 30
-_RETRIES_TIMES = 10
+_RETRIES_TIMES = 5
 
 # redis 相关操作
 class RedisSetHelper(object):
@@ -43,7 +43,7 @@ class RedisSetHelper(object):
 
     def get_picture_item(self):
         # {"url": "http://www.aaa.com/a/a.jpg", "name": "a.jpg", "folder": "a", "page":"www.xxx.com"}
-        data = self.db.srandmember(self.key) # srandmember for debug, spop for produce
+        data = self.db.spop(self.key) # srandmember for debug, spop for produce
         return json.loads(data) if data is not None else None
 
     def get_picture_num(self):
@@ -70,8 +70,8 @@ class AsyncDownloader(object):
         try:
             res = await asks.get(url, headers=header, timeout=_DOWNLOAD_TIMEOUT, retries=3)
         except (trio.BrokenResourceError, trio.TooSlowError, asks.errors.RequestTimeout) as e:
-            logging.error(f"download from {url} fail, timeout or resource error!")
-            await trio.sleep(0) # for scheduler
+            logging.error("download from %s fail]err=%s!" % (url, e))
+            await trio.sleep(random.randint(1, 5)) # for scheduler
             return await self.download_picture(url, referer, res_time-1)
         
         if res.status_code not in [200, 202]:
@@ -79,6 +79,10 @@ class AsyncDownloader(object):
             await trio.sleep(random.randint(3, 10))
             return await self.download_picture(url, referer, res_time-1)
         return res.content
+
+    def is_picture_downloaded(self, folder, name):
+        file_path = os.path.join(self.save_dir, folder, name)
+        return os.path.exists(file_path)
 
     # 异步文件保存
     async def save_item(self, folder, name, content):
@@ -92,11 +96,14 @@ class AsyncDownloader(object):
 
 # 生产-消费 流程控制
 async def download_items(_receiver, downloader, redisHelper):
-    async with _receiver:
-        while True:
-            item = await _receiver.receive()
+    while True:
+        async for item in _receiver:
+            # item = await _receiver.receive() # may get repeated tail
             if item is None:
                 return # 结束下载
+            if downloader.is_picture_downloaded(item['folder'], item['name']):
+                logging.info(f"{item['url']} is already downloaded to {item['folder']}")
+                continue
             logging.debug(f"downloading {item['url']}...")
             content = await downloader.download_picture(item['url'], item.get('page', item['url']))
             if content is not None:
