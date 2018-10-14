@@ -58,9 +58,9 @@ async def download_picture(url, referer, res_time=10):
     header = {"Referer": referer, 
               "User-Agent":_faker.chrome()}
     try:
-        res = await asks.get(url, headers=header, timeout=10, retries=3)
-    except trio.BrokenResourceError as e:
-        logging.error(f"download from {url} fail]reson={e}!")
+        res = await asks.get(url, headers=header, timeout=30, retries=3)
+    except (trio.BrokenResourceError, trio.TooSlowError, asks.errors.RequestTimeout) as e:
+        logging.error(f"download from {url} fail!")
         await trio.sleep(0) # for scheduler
         return await download_picture(url, referer, res_time-1)
     
@@ -88,19 +88,19 @@ async def download_items(_receiver):
             item = await _receiver.receive()
             if item is None:
                 return # 结束下载
-            logging.info(f"downloading {item['name']}...")
+            logging.info(f"downloading {item['url']}...")
             content = await download_picture(item['url'], item.get('page', item['url']))
             if content is not None:
                 await save_item(item['folder'], item['name'], content)
                 logging.info(f"download {item['name']} from {item['url']} to {item['folder']} succ")
             else:
-                save_failed_item(item)
+                save_failed_item(_KEY, item)
                 logging.error(f"download {item['name']} from {item['url']} to {item['folder']} FAIL!")
 
 async def get_items(_sender):
     async with _sender:
         while True:
-            item = get_picture_item()
+            item = get_picture_item(_KEY)
             if item:
                 logging.debug(f"sending {item['name']}...")
                 await _sender.send(item)
@@ -111,7 +111,7 @@ async def get_items(_sender):
 
 
 async def main():
-    total_num = get_picture_num()
+    total_num = get_picture_num(_KEY)
     logging.info(f"there are {total_num} pictures in set]key={_KEY}")
     async with trio.open_nursery() as nursery:
         _sender, _receiver = trio.open_memory_channel(5)
