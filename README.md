@@ -40,6 +40,8 @@ Options:
 ```
 example of mine: 
 ```
+rm log/*.log
+
 scrapy crawl jiandan &
 sleep 2 && python picture_downloader.py --key='picture:jiandan' --dir='/Users/heliang/Pictures/scrapy' --empty_exit=0 --concurrency=20
 

@@ -72,12 +72,12 @@ class AsyncDownloader(object):
         except (trio.BrokenResourceError, trio.TooSlowError, asks.errors.RequestTimeout) as e:
             logging.error(f"download from {url} fail, timeout or resource error!")
             await trio.sleep(0) # for scheduler
-            return await download_picture(url, referer, res_time-1)
+            return await self.download_picture(url, referer, res_time-1)
         
         if res.status_code not in [200, 202]:
             logging.warn(f"download from {url} fail]response={res}")
             await trio.sleep(random.randint(3, 10))
-            return await download_picture(url, referer, res_time-1)
+            return await self.download_picture(url, referer, res_time-1)
         return res.content
 
     # 异步文件保存
