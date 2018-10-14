@@ -10,12 +10,13 @@
 的图片信息协程下载。
 
 Usage:
-  picture_download.py [--key=key] [--dir=dir]
+  picture_download.py [--dir=dir] [--ip=ip] [--port=port] [--key=key]
   picture_download.py --version
 Options:
+  --dir=dir         selett picture save dir. * default: '$HOME/Pictures/scrapy/'
+  --ip=ip           select redis ip. [default: '127.0.0.1']
+  --port=port       select redis ip. [default: 6379]
   --key=key         select redis key. [default: 'picture:jiandan']
-  --dir=dir         picture save dir. *default: '$HOME/Pictures/scrapy/'
-
 '''
 
 
@@ -23,16 +24,19 @@ import redis, json, os, logging, trio, asks, random
 from faker import Faker
 from docopt import docopt
 
+
 # 基本配置和默认参数
 asks.init('trio')
 logging.basicConfig(level=logging.INFO, 
                 format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 _SAVE_DIR = "%s/Pictures/scrapy/" % os.path.expanduser('~') # os.environ['HOME']
 _KEY = 'picture:jiandan'
+_IP = '127.0.0.1'
+_PORT = 6379
 
 
 # redis 相关操作
-_db = redis.StrictRedis(host='127.0.0.1', port=6379, password=None, decode_responses=True)
+_db = redis.StrictRedis(host=_IP, port=_PORT, password=None, decode_responses=True)
 def get_picture_item(key=_KEY):
     # {"url": "http://www.aaa.com/a/a.jpg", "name": "a.jpg", "folder": "a", "page":"www.xxx.com"}
     data = _db.spop(key) # await ?
@@ -92,7 +96,7 @@ async def get_items(_sender):
         while True:
             item = get_picture_item()
             if item:
-                logging.info(f"sending {item['name']}...")
+                logging.debug(f"sending {item['name']}...")
                 await _sender.send(item)
             else:
                 logging.warn(f"sending None to finish the downloader!")
@@ -113,7 +117,10 @@ async def main():
 if __name__ == '__main__':
     arguments = docopt(__doc__, version="picture_downloader 0.0.1")
     _SAVE_DIR = arguments["--dir"] if arguments["--dir"] else _SAVE_DIR
+    _IP = arguments["--ip"] if arguments["--ip"] else _IP
+    _PORT = arguments["--port"] if arguments["--port"] else _PORT
     _KEY = arguments["--key"] if arguments["--key"] else _KEY
+    logging.info(f"start download from redis://{_IP}:{_PORT}/{_KEY} to {_SAVE_DIR} ...")
     trio.run(main)
 
 
