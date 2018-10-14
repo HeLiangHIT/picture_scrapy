@@ -57,7 +57,13 @@ async def download_picture(url, referer, res_time=10):
         return None
     header = {"Referer": referer, 
               "User-Agent":_faker.chrome()}
-    res = await asks.get(url, headers=header)
+    try:
+        res = await asks.get(url, headers=header, timeout=10, retries=3)
+    except trio.BrokenResourceError as e:
+        logging.error(f"download from {url} fail]reson={e}!")
+        await trio.sleep(0) # for scheduler
+        return await download_picture(url, referer, res_time-1)
+    
     if res.status_code not in [200, 202]:
         logging.warn(f"download from {url} fail]response={res}")
         await trio.sleep(random.randint(3, 10))
