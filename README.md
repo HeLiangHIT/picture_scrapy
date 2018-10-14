@@ -30,7 +30,7 @@ Usage:
   picture_download.py [--dir=dir] [--ip=ip] [--port=port] [--key=key] [--empty_exit=empty_exit] [--concurrency=concurrency]
   picture_download.py --version
 Options:
-  --dir=dir                    selett picture save dir. * default: '$HOME/Pictures/scrapy/'
+  --dir=dir                    select picture save dir. * default: '$HOME/Pictures/scrapy/'
   --ip=ip                      select redis ip. [default: 127.0.0.1]
   --port=port                  select redis ip. [default: 6379]
   --key=key                    select redis key. [default: picture:jiandan]
