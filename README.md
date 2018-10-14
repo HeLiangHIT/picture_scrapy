@@ -40,6 +40,7 @@
 使用 scrapy 实现的图片爬取框架，融合了 UserAgentMiddleware/ChromeDownloaderMiddleware 中间件，RedisSetPipeline 管道用于将爬取到的图片保存到redis的set类型中，另外提供一个多线程异步下载器从redis中依次取出图片地址进行批量下载并保存。
 
 下载结果示例：
+
 ![爬取过程...](img/scrapy.png)
 ![爬取过程...](img/download.png)
 ![爬取结果...](img/demo.png)
