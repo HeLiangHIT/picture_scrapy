@@ -4,7 +4,7 @@ BOT_NAME = 'picture_scrapy'
 SPIDER_MODULES = ['picture_scrapy.spiders']
 NEWSPIDER_MODULE = 'picture_scrapy.spiders'
 LOG_LEVEL = 'INFO'
-'LOG_FILE':'log/picture_scrapy.log'
+LOG_FILE = 'log/picture_scrapy.log'
 
 # 中间件参数
 SELENIUM_URL_RE = ['jandan.net/ooxx', ]
