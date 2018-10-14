@@ -21,8 +21,23 @@
 2. 在多个电脑上分别 `git clone 本项目地址`， 然后到工厂目录下使用 `pip install -r requirement.tx` 或者使用 pipenv
 3. 在 settings.py 中设置正确的 `REDIS_IP` 和 `REDIS_PORT` 参数。
 4. 分别使用 `scrapy crawl xxx` 爬取指定的网站
-5. 分别使用 `python picture_downloader.py --key='xxx' --dir='xxx'` 下载指定网站的图片
+5. 分别使用 `python picture_downloader.py --key='xxx' --dir='xxx'` 下载指定网站的图片，更多参数`python picture_downloader.py --help`：
+```
+异步协程下载器：从 redis 里面连续读取图片json信息，然后使用协程下载保存到指定文件夹中。有效的json举例如下：
+`{"url": "http://www.a.com/a/a.jpg", "name": "a.jpg", "folder": "a", "page":"www.a.com"}`
 
+Usage:
+  picture_download.py [--dir=dir] [--ip=ip] [--port=port] [--key=key] [--empty_exit=empty_exit] [--concurrency=concurrency]
+  picture_download.py --version
+Options:
+  --dir=dir                    selett picture save dir. * default: '$HOME/Pictures/scrapy/'
+  --ip=ip                      select redis ip. [default: 127.0.0.1]
+  --port=port                  select redis ip. [default: 6379]
+  --key=key                    select redis key. [default: picture:jiandan]
+  --empty_exit=empty_exit      select if exit when redis set empty. [default: true]
+  --concurrency=concurrency    select the concurrency number of downloader. [default: 20]
+```
+example: `python picture_downloader.py --key='picture:mmjpg' --dir='/Users/heliang/Pictures/scrapy/' --empty_exit=1 --concurrency=20`
 
 #### todo
 
