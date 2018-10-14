@@ -7,10 +7,11 @@ from .util import *
 
 
 from faker import Faker
+_faker = Faker()
 class UserAgentMiddleware():
     # add random user agent
     def process_request(self, request, spider):
-        agents = [Faker().firefox(), Faker().opera(), Faker().chrome()]
+        agents = [_faker.firefox(), _faker.opera(), _faker.chrome()]
         request.headers['User-Agent'] = random.choice(agents)
 
 

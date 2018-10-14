@@ -38,7 +38,7 @@ _PORT = 6379
 _db = redis.StrictRedis(host=_IP, port=_PORT, password=None, decode_responses=True)
 def get_picture_item(key=_KEY):
     # {"url": "http://www.aaa.com/a/a.jpg", "name": "a.jpg", "folder": "a", "page":"www.xxx.com"}
-    data = _db.spop(key) # await ?
+    data = _db.spop(key) # srandmember for debug, spop for produce
     return json.loads(data) if data is not None else None
 
 def get_picture_num(key=_KEY):
@@ -51,11 +51,12 @@ def save_failed_item(key=_KEY, item=None):
 
 
 # 异步下载器
+_faker = Faker()
 async def download_picture(url, referer, res_time=10):
     if res_time <= 0: # 重试超过了次数
         return None
     header = {"Referer": referer, 
-              "User-Agent":Faker(locale='zh-CN').chrome()}
+              "User-Agent":_faker.chrome()}
     res = await asks.get(url, headers=header)
     if res.status_code not in [200, 202]:
         logging.warn(f"download from {url} fail]response={res}")
