@@ -63,7 +63,7 @@
 
 #### 安装教程 && 使用说明
 
-1. 在某台机器上启动 `redis-server path/to/redis.conf` 注意配置中注释掉 `bind 127.0.0.1 ::1`
+1. 在某台机器上启动 `redis-server path/to/redis.conf` 注意配置中注释掉 `bind 127.0.0.1 ::1`、设置`protected-mode no`
 2. 在多个电脑上分别 `git clone 本项目地址`， 然后到工程目录下使用 `pip install -r requirement.txt` 或者使用 `pipenv shell`
 3. 在 settings.py 中设置正确的 `REDIS_IP` 和 `REDIS_PORT` 参数。
 4. 分别使用 `scrapy crawl xxx` 爬取指定的网站
