@@ -116,6 +116,7 @@ start_crawl jiandan # meizitu mzitu mmjpg
 1. 代理ip： 当前没有遇到封锁ip的现象，所以未实现ip池，如果后期有需要可以增加。
 2. 下载文件去重复功能，发现本地已经存在的文件就不再下载了。 -- done
 3. 爬取网页去重复功能，爬取过的网页就不再爬了（某些主页列表例外） - 即使重启机器/爬虫，如何实现？ -- 使用`RedisCrawlSpider`？
+4. 扩展到视频爬取的功能，再参考 picture_downloader.py 实现一个 video_downloader.py .
 
 
 #### 参与贡献
