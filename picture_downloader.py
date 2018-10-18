@@ -28,8 +28,8 @@ from docopt import docopt
 
 # 基本配置和默认参数
 asks.init('trio')
-logging.basicConfig(level=logging.INFO, 
-                format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+logging.basicConfig(level=logging.DEBUG, 
+    format='%(asctime)s %(filename)s:%(lineno)d %(threadName)s:%(funcName)s %(levelname)s-%(message)s')
 _SAVE_DIR = "%s/Pictures/scrapy/" % os.path.expanduser('~') # os.environ['HOME']
 _DOWNLOAD_TIMEOUT = 30
 _RETRIES_TIMES = 5
